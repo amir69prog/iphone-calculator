@@ -2,6 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow,QDialog,QVBoxLayout,QWidget
 from PyQt5.QtGui import QIcon
 from calculator_ui import Ui_Form
+from PyQt5 import QtCore
 
 class Calculator(QMainWindow):
 	def __init__(self):
@@ -54,29 +55,54 @@ class Calculator(QMainWindow):
 		self.ui.clear.show()
 
 	def insertToInput(self,value,append=True):
+		current_value = self.ui.result.text()
+		
 		value = str(value)
 		if append:
-			self.ui.result.setText(self.ui.result.text() + value)
+			self.ui.result.setText(current_value + value)
 		else:
 			self.ui.result.setText(value)
 		if self.last_operator == '=':
 			self.last_operator = ''
 
+	def remove_last(self):
+		current_value = self.ui.result.text()
+		if current_value == '0.' or current_value == '-0' or current_value == '-0.':
+			current_value = ''
+		else:	
+			current_value = current_value[:-1]
+		self.insertToInput(current_value,False)
+
 	def insertDot(self):
+
 		if self.ui.result.text() == '':
 			self.insertToInput('0.')
 		if '.' not in self.ui.result.text():
 			self.insertToInput('.')
 
 	def insertNumber(self,num):
+		current_value = self.ui.result.text()
+		
+		if current_value == '-0':
+			return
 		if self.last_operator != '=':
 			self.insertToInput(num)
 		else:
 			self.insertToInput(num,False)
 
+	def removeNumber(self,char):
+		current_value = self.ui.result.text()
+		current_value.replace(char,'')
+		self.insertToInput(current_value,False)
+
 	def insertZero(self):
-		if self.ui.result.text():
-			self.insertToInput('0')
+		try:
+			if self.ui.result.text():
+				if not self.ui.result.text().endswith('0'):
+					self.insertToInput('0')
+		except:
+			pass
+
 
 	def insertExpression(self,value):
 		self.expression += value
@@ -135,6 +161,49 @@ class Calculator(QMainWindow):
 		self.expression = ' '
 		self.clear()
 		self.show_clear()
+
+
+	def keyPressEvent(self, event):
+		if event.key() == QtCore.Qt.Key_0:
+			self.insertZero()
+		elif event.key() == QtCore.Qt.Key_1:
+			self.insertNumber(1)
+		elif event.key() == QtCore.Qt.Key_2:
+			self.insertNumber(2)
+		elif event.key() == QtCore.Qt.Key_3:
+			self.insertNumber(3)
+		elif event.key() == QtCore.Qt.Key_4:
+			self.insertNumber(4)
+		elif event.key() == QtCore.Qt.Key_5:
+			self.insertNumber(5)
+		elif event.key() == QtCore.Qt.Key_6:
+			self.insertNumber(6)
+		elif event.key() == QtCore.Qt.Key_7:
+			self.insertNumber(7)
+		elif event.key() == QtCore.Qt.Key_8:
+			self.insertNumber(8)
+		elif event.key() == QtCore.Qt.Key_9:
+			self.insertNumber(9)
+		elif event.key() == QtCore.Qt.Key_Backspace:
+			self.remove_last()
+		elif event.key() == QtCore.Qt.Key_Delete:
+			self.clear()
+		elif event.key() == QtCore.Qt.Key_Enter:
+			self.equalExpression()
+		elif event.key() == QtCore.Qt.Key_Percent:
+			self.set_percentage()
+		elif event.key() == QtCore.Qt.Key_Plus:
+			self.insertOperator('+')
+		elif event.key() == QtCore.Qt.Key_Period:
+			self.insertDot()
+		elif event.key() == QtCore.Qt.Key_Slash:
+			self.insertOperator('/')
+		elif event.key() == QtCore.Qt.Key_Asterisk:
+			self.insertOperator('*')
+		elif event.key() == QtCore.Qt.Key_Minus:
+			self.insertOperator('-')
+		elif event.key() == QtCore.Qt.Key_Alt:
+			self.negative_or_posetive()
 
 
 
