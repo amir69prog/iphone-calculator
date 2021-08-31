@@ -83,7 +83,7 @@ class Calculator(QMainWindow):
 	def insertNumber(self,num):
 		current_value = self.ui.result.text()
 		
-		if current_value == '-0':
+		if current_value in ['-0','0'] :
 			return
 		if self.last_operator != '=':
 			self.insertToInput(num)
@@ -97,9 +97,8 @@ class Calculator(QMainWindow):
 
 	def insertZero(self):
 		try:
-			if self.ui.result.text():
-				if not self.ui.result.text().endswith('0'):
-					self.insertToInput('0')
+			if not self.ui.result.text() in ['0','-0','0']:
+				self.insertToInput('0')
 		except:
 			pass
 
@@ -204,7 +203,8 @@ class Calculator(QMainWindow):
 			self.insertOperator('-')
 		elif event.key() == QtCore.Qt.Key_Alt:
 			self.negative_or_posetive()
-
+		elif event.key() == QtCore.Qt.Key_Escape:
+			self.all_clear()
 
 
 
